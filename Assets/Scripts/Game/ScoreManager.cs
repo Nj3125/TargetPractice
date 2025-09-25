@@ -1,15 +1,23 @@
 using TMPro;
 using UnityEngine;
 using System.IO;
+using System.Collections.Generic;
+
+[System.Serializable]
+public class ScoreData
+{
+    public List<int> allScores = new List<int>();
+}
 
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager Instance; 
+    public static ScoreManager Instance;
 
-    public TMP_Text scoreText; 
-    private int score = 0;
+    public TMP_Text scoreText;
+    private int currentScore;
 
     private string filePath;
+    private ScoreData scoreData;
 
     void Awake()
     {
@@ -24,41 +32,17 @@ public class ScoreManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        filePath = Path.Combine(Application.persistentDataPath, "score.txt");
-
-        if (File.Exists(filePath))
-        {
-            string savedScore = File.ReadAllText(filePath);
-            int parsedScore;
-            if (int.TryParse(savedScore, out parsedScore))
-            {
-                score = parsedScore;
-            }
-        }
-
-        UpdateScoreUI();
-    }
-
     public void AddScore(int amount)
     {
-        score += amount;
+        currentScore += amount;
         UpdateScoreUI();
-        SaveScore();
     }
 
     void UpdateScoreUI()
     {
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + score.ToString();
+            scoreText.text = "Score: " + currentScore.ToString();
         }
-    }
-
-    private void SaveScore()
-    {
-        File.WriteAllText(filePath, score.ToString());
-        Debug.Log("Score saved to " + filePath);
     }
 }

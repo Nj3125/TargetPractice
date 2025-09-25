@@ -34,6 +34,8 @@ public class GameTimer : MonoBehaviour
 
     void EndGame()
     {
-        SceneManager.LoadScene("Main Menu");  // Placeholder for now.
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+        SceneManager.LoadScene("Game Over");  // Placeholder for now.
     }
 }
