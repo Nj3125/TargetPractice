@@ -1,6 +1,6 @@
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
+using System.IO;
 
 public class ScoreManager : MonoBehaviour
 {
@@ -9,12 +9,14 @@ public class ScoreManager : MonoBehaviour
     public TMP_Text scoreText; 
     private int score = 0;
 
+    private string filePath;
+
     void Awake()
     {
-        // basic singleton pattern
         if (Instance == null)
         {
             Instance = this;
+            DontDestroyOnLoad(gameObject);
         }
         else
         {
@@ -24,6 +26,18 @@ public class ScoreManager : MonoBehaviour
 
     void Start()
     {
+        filePath = Path.Combine(Application.persistentDataPath, "score.txt");
+
+        if (File.Exists(filePath))
+        {
+            string savedScore = File.ReadAllText(filePath);
+            int parsedScore;
+            if (int.TryParse(savedScore, out parsedScore))
+            {
+                score = parsedScore;
+            }
+        }
+
         UpdateScoreUI();
     }
 
@@ -31,10 +45,20 @@ public class ScoreManager : MonoBehaviour
     {
         score += amount;
         UpdateScoreUI();
+        SaveScore();
     }
 
     void UpdateScoreUI()
     {
-        scoreText.text = "Score: " + score.ToString();
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + score.ToString();
+        }
+    }
+
+    private void SaveScore()
+    {
+        File.WriteAllText(filePath, score.ToString());
+        Debug.Log("Score saved to " + filePath);
     }
 }

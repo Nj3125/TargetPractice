@@ -9,10 +9,11 @@ public class MainMenu : MonoBehaviour
 
     public void Quit()
     {
+        // This is so quitting is the same in the editor as it is in the build:
         #if UNITY_EDITOR
             UnityEditor.EditorApplication.isPlaying = false;
         #else
-            Application.Quit();
+        Application.Quit();
         #endif
     }
 }
