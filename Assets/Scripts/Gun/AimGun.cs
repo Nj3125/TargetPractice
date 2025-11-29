@@ -2,13 +2,23 @@ using UnityEngine;
 
 public class GunAimAtMouse : MonoBehaviour
 {
-    public Camera mainCamera;
-    public float planeDistance = 10f; // distance from camera along forward
+    [SerializeField] private Camera mainCamera;
+    [SerializeField] private RenderTexture renderTexture;
+    [SerializeField] private float planeDistance = 10f; // distance from camera along forward
 
     void Update()
     {
-        // Ray from mouse
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        float scaleX = renderTexture.width / (float)Screen.width;
+        float scaleY = renderTexture.height / (float)Screen.height;
+
+        Vector3 rtMouse = new Vector3(
+            Input.mousePosition.x * scaleX,
+            Input.mousePosition.y * scaleY,
+            0
+        );
+
+        // Cast ray from camera using scaled position
+        Ray ray = mainCamera.ScreenPointToRay(rtMouse);
 
         // Plane perpendicular to camera at fixed distance
         Plane plane = new Plane(mainCamera.transform.forward, mainCamera.transform.position + mainCamera.transform.forward * planeDistance);

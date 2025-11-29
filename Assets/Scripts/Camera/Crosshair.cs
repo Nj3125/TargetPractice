@@ -15,7 +15,7 @@ public class Crosshair : MonoBehaviour
     {
         // Determine the width and height of the crosshair:
         float width = crosshairTexture.width * crosshairScale;
-        float height = crosshairTexture.width * crosshairScale;
+        float height = crosshairTexture.height * crosshairScale;
 
         // Determine the mouse position:
         Vector2 mousePos = new Vector2(Input.mousePosition.x, Screen.height - Input.mousePosition.y);

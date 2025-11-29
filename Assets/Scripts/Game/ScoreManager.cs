@@ -2,34 +2,17 @@ using TMPro;
 using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
-
-[System.Serializable]
-public class ScoreData
-{
-    public List<int> allScores = new List<int>();
-}
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ScoreManager : MonoBehaviour
 {
-    public static ScoreManager Instance;
+    [SerializeField] private TMP_Text scoreText;
 
-    public TMP_Text scoreText;
-    private int currentScore;
+    public int currentScore;
 
-    private string filePath;
-    private ScoreData scoreData;
-
-    void Awake()
+    private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (scoreText == null) { Debug.LogError("ScoreManager: No scoreText assigned in the Inspector!", this); }
     }
 
     public void AddScore(int amount)
@@ -40,9 +23,13 @@ public class ScoreManager : MonoBehaviour
 
     void UpdateScoreUI()
     {
-        if (scoreText != null)
-        {
-            scoreText.text = "Score: " + currentScore.ToString();
-        }
+        if (scoreText != null) { scoreText.text = "Score: " + currentScore.ToString(); }
+    }
+
+    public void WriteScoreToFile()
+    {
+        string path = Path.Combine(Application.persistentDataPath, "score.json");
+        File.AppendAllText(path, currentScore.ToString() + "\n");
+        Debug.Log("Saved score " + currentScore + " to path " + path);
     }
 }

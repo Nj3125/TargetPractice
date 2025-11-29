@@ -1,17 +1,23 @@
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ShootGun : MonoBehaviour
 {
     public Transform muzzle;
-    public float range = 100f;
-    public float fireRate = 0.5f;
     public LineRenderer laserLine;
-    public float laserDuration = 0.1f;
     public LayerMask targetMask;
 
-    private float nextFireTime = 0f;
+    public PlayerData data = new PlayerData();
+    float lastShotTime = -1f;
+    float lastHitTime = -1f;
 
-    // Update is called once per frame
+    [SerializeField] private float range = 100f, fireRate = 0.5f, laserDuration = 0.1f, nextFireTime = 0f;
+
+    void Awake()
+    {
+        laserLine.enabled = false;
+    }
+
     void Update()
     {
         if (Input.GetMouseButtonDown(0) && Time.time >= nextFireTime)
@@ -27,11 +33,24 @@ public class ShootGun : MonoBehaviour
         RaycastHit hit;
         Vector3 endPos = muzzle.position + muzzle.forward * range;
 
+        if (lastShotTime >= 0f)
+        {
+            data.timeBetweenShots.Add(Time.time - lastShotTime);
+        }
+        lastShotTime = Time.time;
+        data.shotsFired++;
+
         if (Physics.Raycast(ray, out hit, range, targetMask))
         {
-            Debug.Log("Hit: " + hit.collider.name);
-            ScoreManager.Instance.AddScore(1);
+            GameManager.Instance.scoreManager.AddScore(1);
             Destroy(hit.collider.gameObject);
+
+            if (lastHitTime >= 0)
+            {
+                data.timeBetweenHits.Add(Time.time - lastHitTime);
+            }
+            lastHitTime = Time.time;
+            data.targetsHit++;
         }
         GetComponent<RecoilGun>().Recoil();
         Debug.DrawRay(muzzle.position, muzzle.forward * range, Color.red, 100f);

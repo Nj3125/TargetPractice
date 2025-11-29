@@ -5,37 +5,26 @@ using TMPro;
 
 public class GameTimer : MonoBehaviour
 {
-    public float gameDuration = 30f;
+    [SerializeField] private TMP_Text timerText;
+
+    [SerializeField] private float gameDuration = 30f;
     private float timeRemaining;
 
-    public TMP_Text timerText;
-
+    // Timer starts:
     void Start()
     {
         timeRemaining = gameDuration;
     }
 
+    // Timer ticks down and ends game if timeRemaining = 0:
     void Update()
     {
+        if (GameManager.Instance.CurrentState == GameState.GameOver) { return; }
         timeRemaining -= Time.deltaTime;
-        if (timeRemaining < 0) { timeRemaining = 0; }
 
-        if (timerText != null)
-        {
-            timerText.text = "Time: " + Mathf.Ceil(timeRemaining).ToString();
-        }
+        if (timeRemaining < 0){ timeRemaining = 0; }
+        timerText.text = "Time: " + Mathf.Ceil(timeRemaining).ToString();
 
-        // If time runs out, end the game
-        if (timeRemaining <= 0)
-        {
-            EndGame();
-        }
-    }
-
-    void EndGame()
-    {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
-        SceneManager.LoadScene("Game Over");  // Placeholder for now.
+        if (timeRemaining <= 0) { GameManager.Instance.EndGame(); }
     }
 }
